@@ -1,9 +1,11 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
+const cors = require("cors");
 
 //MIDDLEWARE JSON
 app.use(express.json());
+app.use(cors());
 
 //MIDDLEWARE MORGAN POST REQUESTS CONFIG
 morgan.token("postData", (request) => {
@@ -76,7 +78,7 @@ app.delete("/api/persons/:id", (request, respons) => {
   const id = Number(request.params.id);
   persons = persons.filter((p) => p.id !== id);
 
-  respons.send(204).end();
+  respons.sendStatus(204).end();
 });
 
 //POST - CREATE PERSON
@@ -107,7 +109,7 @@ app.post("/api/persons", (request, response) => {
 });
 
 //SERVER
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
