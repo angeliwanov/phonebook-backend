@@ -6,6 +6,7 @@ const cors = require("cors");
 //MIDDLEWARE JSON
 app.use(express.json());
 app.use(cors());
+app.use(express.static("dist"));
 
 //MIDDLEWARE MORGAN POST REQUESTS CONFIG
 morgan.token("postData", (request) => {
@@ -39,11 +40,6 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
-
-//HOME
-app.get("/", (request, response) => {
-  response.send("<h1>Hello Phonebook!</h>");
-});
 
 //GET ALL PERSONS
 app.get("/api/persons", (request, response) => {
