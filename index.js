@@ -26,9 +26,9 @@ app.get("/api/persons", async (request, response, next) => {
 });
 
 //GET INFO
-app.get("/info", (request, response) => {
+app.get("/info", async (request, response) => {
   const today = new Date();
-  const people = persons.length;
+  const people = (await Person.find({})).length;
   response.send(`
     <p>Phonebook has info for ${people} people</p>
     <p>${today}</p>
