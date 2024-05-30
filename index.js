@@ -60,18 +60,13 @@ app.delete("/api/persons/:id", async (request, response, next) => {
 });
 
 app.put("/api/persons/:id", async (request, response, next) => {
-  const body = request.body;
-
-  const person = {
-    name: body.name,
-    number: body.number,
-  };
+  const { name, number } = request.body;
 
   try {
     const updatedPerson = await Person.findByIdAndUpdate(
       request.params.id,
-      person,
-      { new: true }
+      { name, number },
+      { new: true, runValidators: true, context: "query" }
     );
     response.json(updatedPerson);
   } catch (error) {
@@ -80,22 +75,20 @@ app.put("/api/persons/:id", async (request, response, next) => {
 });
 
 //POST - CREATE PERSON
-app.post("/api/persons", async (request, response) => {
+app.post("/api/persons", async (request, response, next) => {
   const body = request.body;
-
-  if (!body.name) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
 
   const person = new Person({
     name: body.name,
     number: body.number,
   });
 
-  const savedPerson = await person.save();
-  response.json(savedPerson);
+  try {
+    const savedPerson = await person.save();
+    response.json(savedPerson);
+  } catch (error) {
+    next(error);
+  }
 });
 
 //unknownEndpoint
@@ -111,6 +104,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatter id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
